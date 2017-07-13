@@ -25,6 +25,7 @@ enum {
 };
 
 int page_size;
+
 //send via TCP
 struct demo_dest_info {
 	uint16_t lid;			/* Local ID */
@@ -50,8 +51,7 @@ struct config_s config = {
 	.rx_depth	= 1
 };
 
-//sock
-//device list has no need to be conbined with RDMA connection, put it in main
+//sock has no need to be conbined with RDMA connection, put it in main
 struct demo_context {
 	struct ibv_device		**dev_list;		/* IB device list */
 	struct demo_dest_info	remote_info;	/* values to build RDMA connections */ 
@@ -77,7 +77,6 @@ void demo_context_setnull(struct demo_context *ctx){
 struct demo_context* demo_context_init(void){
 
 	struct demo_context 	*ctx;
-	//struct ibv_device 		**dev_list;
 	struct ibv_device 		*ib_dev;
 	int						mr_flages;
 
@@ -146,7 +145,6 @@ struct demo_context* demo_context_init(void){
 	memset(ctx->buf, 0, ctx->size);
 
 	//now we want to exchange msg between both sides, so flag sets local & remote write
-	//is it okay to put message in buffer later? not know yet
 	strcpy(ctx->buf, "Hello world");
 
 	mr_flages = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_WRITE;
@@ -401,12 +399,7 @@ void usage(const char *argv0){
 }
 int main(int argc, char *argv[]){
 	struct ibv_device 		**dev_list;
-	//struct ibv_device		*ib_dev;
 	struct demo_context 	*ctx;
-	//int						size 		= 1024;			/* buffer size */
-	//int 					tcp_port 	= 18515;		/* TCP port */
-	//int						ib_port 	= 1;			/* IB port */
-	//char					*dev_name 	= NULL;		/* IV device */
 	char					*server_name 	= NULL;		/* server name */
 	while (1) {
 		int c;
@@ -491,9 +484,6 @@ int main(int argc, char *argv[]){
 
 	page_size = sysconf(_SC_PAGESIZE);
 
-	//ctx = (struct demo_context*)malloc(sizeof(struct demo_context));
-	//demo_context_setnull(ctx);
-
 	ctx = demo_context_init();
 	if (!ctx) {
 		fprintf(stderr, "Couldn't initial context\n");
@@ -564,13 +554,10 @@ int main(int argc, char *argv[]){
 
 	}
 
-
-	//printf("Message is %s\n", ctx->buf);
 	if(demo_close_ctx(ctx)){
 		return 1;
 	}
 
-	//ibv_free_device_list(ctx->dev_list);
 	free(config.dev_name);
 	if(server_name) free(server_name);
 	return 0;
