@@ -1,1 +1,50 @@
-# rdma_demo
+# RDMA demo
+
+main
+
+- get options
+  - size
+  - TCP port
+  - IB device name
+  - IB port
+  - rx_depth
+  - (server name for client)
+- print configurations
+- initial demo context
+  - get IB device
+    - if there is IB device name
+  - get IB port information, which's lid is used later
+  - create PD, CQ, buffer, register memory region
+  - reset QP, move to INIT state
+- post receive rx_depth work requests
+- connect QP
+  - build TCP connection "sock"
+  - exchange info
+    - addr
+    - rkey
+    - qpn
+    - lid
+  - close TCP connection
+  - move QP to RTR state
+  - move QP to RTS state
+- send message
+  - client:
+    - copy message to buffer
+    - post send request
+    - wait for receive completion
+    - print message
+  - server:
+    - wait for receive completion
+    - print message
+    - copy message to buffer
+    - post send request
+- destroy resources
+  - QP
+  - CQ
+  - MR
+  - PD
+  - IB device
+  - device list
+  - buffer
+  - context itself
+  - string made by strdup 
